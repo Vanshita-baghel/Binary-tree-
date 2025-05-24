@@ -1,0 +1,40 @@
+class Solution {
+    public static int isSumProperty(Node root) {
+        if(root==null|| (root.left==null && root.right==null))  return 1;
+        int left= root.left!=null ? root.left.data : 0;
+        int right= root.right!=null ? root.right.data : 0;
+        
+        if(left+right!=root.data)   return 0;
+        
+        int lh= isSumProperty(root.left);
+        int rh= isSumProperty(root.right);
+        
+        return (lh==1 && rh==1)? 1: 0;
+    }
+}
+
+
+Intuition:
+    ------------
+    The goal is to check if each node in a binary tree follows the "Children Sum Property".
+    This means: For every non-leaf node, the node's value should be equal to the sum of
+    its left and right child's values.
+
+    To solve this, we use a recursive approach:
+
+    1. **Base Case:**
+       - If the node is null or a leaf node (no children), return 1 (property is satisfied).
+
+    2. **Check Current Node:**
+       - Get the value of the left and right child. If a child is null, treat its value as 0.
+       - If the sum of left and right child values is NOT equal to the current node's value,
+         return 0 (property violated).
+
+    3. **Recursive Check:**
+       - Recursively check the left and right subtrees.
+       - If both subtrees satisfy the property, return 1. Else, return 0.
+
+    This is a post-order traversal: we validate the current node only after ensuring its children are valid.
+
+    Time Complexity: O(n) — Every node is visited once.
+    Space Complexity: O(h) — Due to recursion stack, where h is the height of the tree.
