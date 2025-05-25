@@ -1,0 +1,130 @@
+# 🔥 Burning Tree - Minimum Time to Burn the Binary Tree from a Target Node
+
+## 👉 Problem:
+
+Given the root of a binary tree and a target node, determine the **minimum time required to burn the entire tree** if the target node is set on fire.  
+
+In one second, the fire spreads from a node to:
+- Its **left child**
+- Its **right child**
+- Its **parent**
+
+### 🔒 Constraints:
+- All node values in the tree are **unique**.
+
+---
+
+## 👉 Explanation:
+
+We are simulating a fire spreading in a tree. Starting from the given target node, the fire spreads to its adjacent nodes every second.  
+Since binary trees don't allow direct traversal to a node's parent, we need an extra step to track parent references.
+
+The problem is essentially a **graph traversal** problem where:
+- Each node is a vertex.
+- Edges exist between a node and its left child, right child, and parent.
+
+---
+
+## 👉 Intuition (Based on Code Logic):
+
+1. **Track Parent Nodes**  
+   The helper method `markParent()` performs a level-order traversal (BFS) and fills a `Map<Node, Node>` where each child points to its parent.  
+   This lets us move upwards from any node during the fire spread.
+
+2. **Locate the Target Node**  
+   Using `findNode()`, we search the tree recursively to find the actual `Node` object with the value equal to `target`.
+
+3. **Simulate Fire Spread (BFS Traversal)**  
+   - Start from the `target_node`, add it to the queue and mark it as visited.
+   - For each level in BFS (representing one second), check all nodes in the queue.
+   - Spread fire to unvisited neighbors: left child, right child, and parent.
+   - Use a `flag` to track whether the fire spread during this second.
+   - If fire spreads in the current second, increment `sec`.
+
+4. **Termination**  
+   The BFS ends when there are no more unburned (unvisited) nodes to spread to.  
+   At that point, `sec` will hold the total time needed to burn the entire tree.
+
+---
+
+## 👉 Breakdown of Main Components in the Code:
+
+| Function/Part              | Purpose |
+|---------------------------|---------|
+| `markParent(Node, Map)`   | Populates a map with child → parent relations |
+| `findNode(Node, int)`     | Recursively finds and returns the target node object |
+| BFS traversal with `Queue`| Simulates fire spread level by level |
+| `Map<Node, Boolean>`      | Tracks visited (burned) nodes |
+| `flag` variable            | Ensures time is incremented only when the fire spreads |
+
+---
+
+## 👉 CODE:
+
+class Solution {
+    public static int minTime(Node root, int target) {
+        Map<Node, Node> parent_track= new HashMap<>();
+        Queue<Node> Q= new LinkedList<>();
+        Map<Node, Boolean> visited= new HashMap<>();
+        markParent(root, parent_track);
+        Node target_node= findNode(root, target);
+        if(target_node==null)   return 0;
+        int sec=0;
+        Q.add(target_node);
+        visited.put(target_node, true);
+        while(!Q.isEmpty()){
+            int levelSize= Q.size();
+            boolean flag= false;
+            for(int i=0; i<levelSize; i++){
+                Node curr= Q.poll();
+                if(curr.left!=null && !visited.containsKey(curr.left)){
+                    Q.add(curr.left);
+                    visited.put(curr.left, true);
+                    flag= true;
+                }
+                if(curr.right!=null && !visited.containsKey(curr.right)){
+                    Q.add(curr.right);
+                    visited.put(curr.right, true);
+                    flag= true;
+                }
+                Node parent= parent_track.get(curr);
+                if(parent!=null && !visited.containsKey(parent)){
+                    Q.add(parent);
+                    visited.put(parent, true);
+                    flag= true;
+                }
+            }
+            if(flag)    sec++;
+        }
+        return sec;
+        
+    }
+    public static void markParent(Node root, Map<Node, Node> parent){
+        Queue<Node> Q= new LinkedList<>();
+        Q.add(root);
+        while(!Q.isEmpty()){
+            Node curr= Q.poll();
+            if(curr.left!=null){
+                Q.add(curr.left);
+                parent.put(curr.left, curr);
+            }
+            if(curr.right!=null){
+                Q.add(curr.right);
+                parent.put(curr.right, curr);
+            }
+        }
+    }
+    public static Node findNode(Node root, int target){
+        if(root==null || root.data== target)  return root;
+        Node lh= findNode(root.left, target);
+        if(lh!=null)    return lh;
+        return findNode(root.right, target);
+        
+    }
+}
+
+
+## 👉 Time and Space Complexity:
+
+- **Time Complexity**: `O(N)` — We visit each node once to map parents, find the target, and perform BFS.
+- **Space Complexity**: `O(N)` — For parent map, visited map, and queue used in BFS.
