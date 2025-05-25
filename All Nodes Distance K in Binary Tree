@@ -1,0 +1,86 @@
+👉PROBLEM:
+Given the root of a binary tree, the value of a target node target, and an integer k, return an array of the values of all nodes that have a distance k from the target node.
+You can return the answer in any order.
+
+👉Explanation:
+We are given the root of a binary tree and a target node value. We need to return all nodes that are exactly k edges away from the target node.
+The nodes can be in any direction (left, right, or upward toward the parent), so we need a way to move in all directions from the target node.
+
+👉Intuition:
+1. For a given node, the valid k-distance neighbors can lie in its:
+  Left subtree
+  Right subtree
+  Or via its parent, which is not directly accessible in a binary tree.
+2. Since in a binary tree we cannot move upward (to the parent) easily, we must store each node’s parent using a HashMap during a pre-processing traversal (BFS or DFS).
+3. We will use BFS (Breadth-First Search) starting from the target node to explore all nodes that are exactly k steps away.
+
+👉 Approach:
+🧠 Step-by-Step Plan:
+1. Store Parent References:
+    Traverse the tree and map each child node to its parent using a Map<Node, Node>.
+2. Find the Target Node:
+    Perform a traversal (DFS or BFS) to locate the node object corresponding to the given target value.
+3. BFS from Target:
+    Use a queue for BFS traversal starting from the target node.
+    Keep track of visited nodes using a Set to prevent cycles.
+4. Track Distance:
+    At each level of BFS, increment a counter to represent the current distance from the target node.
+    When distance == k, collect all node values in the queue and return them.
+
+👉CODE:
+
+class Solution {
+    public List<Integer> distanceK(TreeNode root, TreeNode target, int k) {
+        Queue<TreeNode> Q= new LinkedList<>();
+        Map<TreeNode, Boolean> visited= new HashMap<>();
+        Map<TreeNode, TreeNode> parent_track= new HashMap<>();
+        markParent(root, parent_track);
+        Q.add(target);
+        visited.put(target, true);
+        int dis=0;
+        while(!Q.isEmpty()){
+            if(dis==k)  break;
+            int levelSize= Q.size();
+            for(int i=0; i<levelSize; i++){
+                TreeNode curr= Q.poll();
+                if(curr.left!=null && !visited.containsKey(curr.left)){
+                    Q.add(curr.left);
+                    visited.put(curr.left, true);
+                }
+                if(curr.right!=null && !visited.containsKey(curr.right)){
+                    Q.add(curr.right);
+                    visited.put(curr.right, true);
+                }
+                TreeNode parent= parent_track.get(curr);
+                if(parent!=null && !visited.containsKey(parent)){
+                    Q.add(parent);
+                    visited.put(parent, true);
+                }
+            }
+            dis++;
+        }
+        List<Integer> result= new ArrayList<>();
+        while(!Q.isEmpty()){
+            result.add(Q.poll().val);
+        }
+        return result;
+    }
+    public void markParent(TreeNode root, Map<TreeNode, TreeNode> parent){
+        Queue<TreeNode> Q= new LinkedList<>();
+        Q.add(root);
+        while(!Q.isEmpty()){
+            TreeNode curr= Q.poll();
+            if(curr.left!=null){
+                Q.add(curr.left);
+                parent.put(curr.left, curr);
+            }
+            if(curr.right!=null){
+                Q.add(curr.right);
+                parent.put(curr.right, curr);
+            }
+        }
+    }
+}
+
+
+        
