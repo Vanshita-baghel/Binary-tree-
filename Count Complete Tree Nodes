@@ -1,0 +1,70 @@
+📘 Problem: Count Complete Tree Nodes
+You are given the root of a complete binary tree. A complete binary tree is a binary tree in which every level, except possibly the last, is completely filled, and all nodes are as far left as possible.
+
+Return the number of the nodes in the tree.
+⏱️ Expected Time Complexity: Better than O(n), ideally O(log^2 n)
+
+👉CODE:
+
+class Solution {
+    public int countNodes(TreeNode root) {
+        if(root==null)  return 0;
+        int lh= getLeftHeight(root);
+        int rh= getRightHeight(root);
+        if(lh==rh)  return (1<<(lh))-1; //(2^lh) -1
+
+        return 1+ countNodes(root.left)+countNodes(root.right);
+    }
+    public int getLeftHeight(TreeNode root){
+        int cnt=0;
+        while(root!=null){
+            cnt++;
+            root= root.left;
+        }
+        return cnt;
+    }
+    public int getRightHeight(TreeNode root){
+        int cnt=0;
+        while(root!=null){
+            cnt++;
+            root= root.right;
+        }
+        return cnt;
+    }
+}
+
+Brute FOrce: we can traverse the tree using bfs or dfs and keep a counter to track number of nodes. Time complexity: O(n), but the question specifically demands better than O(n).
+
+⏲️Time Complexity
+    Each recursive step reduces the height by 1.
+
+    Getting the height takes O(log n)
+
+    So total time = O(log n * log n) = O(log^2 n)
+
+🧠 Intuition
+In a perfect binary tree, the number of nodes is 2^height - 1.
+
+This solution uses that fact to quickly count nodes without traversing all of them.
+
+🔍 Explanation
+1.For a given subtree, compute:
+
+    lh: the height of the leftmost path
+
+    rh: the height of the rightmost path
+
+Case 1: lh == rh
+This subtree is a perfect binary tree.
+
+Total nodes = 2^lh - 1 (using bitwise 1 << lh for performance)
+
+Case 2: lh != rh
+It's not perfect, so:
+
+Count the root (1)
+
+Recurse into left and right subtrees
+
+Total = 1 + count(left subtree) + count(right subtree)
+
