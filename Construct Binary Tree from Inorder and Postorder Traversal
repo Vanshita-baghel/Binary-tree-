@@ -1,0 +1,56 @@
+👉PROBLEM:
+Given two integer arrays inorder and postorder where inorder is the inorder traversal of a binary tree and postorder is the postorder traversal of the same tree, construct and return the binary tree.
+
+👉EXPLANATION:
+Postorder= Left -> Right -> Root
+inorder= Left -> Root -> Right
+
+We know the last element of postorder list is always root. and we can find the number of nodes in right and left subtree through inorder list.
+
+👉DATA STRUCTURES TO BE USED:
+HashMap<Integer, Integer>  --> to find the position of root in inorder list in O(1).
+
+👉INTUITION:
+1.  All node values are unique, so we can map each value to its index in the inorder array using a HashMap.
+
+2.  In each recursive step:
+
+    i. The last element of the current postorder subarray is the root.
+
+  ii.  Use the hashmap to find the index of this root in the inorder array.
+
+3. The number of nodes in the right subtree is calculated as:
+   number of right nodes = inOrderEndIndex - indexOfRoot
+4. Based on this count, we can split the postorder array into two parts:
+
+    Left subtree: just before the right subtree elements
+
+    Right subtree: the last elements before the root
+
+5. Recursively build the right subtree first (because in postorder it's closer to the root) and then the left subtree.
+
+
+
+👉CODE:
+
+class Solution {
+    //inorder= left, root, right
+    //postorder= left, right, root
+    public TreeNode buildTree(int[] inorder, int[] postorder) {
+        HashMap<Integer, Integer> mp= new HashMap<>();
+        for(int i=0; i<inorder.length; i++){
+            mp.put(inorder[i], i);
+        }
+        TreeNode root= buildTree(postorder, 0, postorder.length-1, inorder, 0, inorder.length-1, mp);
+        return root;
+    }
+    public TreeNode buildTree(int[] postorder, int postStart, int postEnd, int[] inorder, int inStart, int inEnd, HashMap<Integer, Integer> mp){
+        if(inStart>inEnd || postStart>postEnd)  return null;
+        TreeNode root= new TreeNode(postorder[postEnd]);
+        int indRoot= mp.get(root.val);
+        int noOfElOnRight= inEnd- indRoot;
+        root.right= buildTree(postorder, postEnd-noOfElOnRight, postEnd-1, inorder, indRoot+1, inEnd,mp);
+        root.left= buildTree(postorder, postStart, postEnd-noOfElOnRight-1, inorder, inStart, indRoot-1,mp);
+        return root;
+    }
+}
