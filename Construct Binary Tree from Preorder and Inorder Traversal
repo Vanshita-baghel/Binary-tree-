@@ -1,0 +1,50 @@
+👉PROBLEM:
+Given two integer arrays preorder and inorder where preorder is the preorder traversal of a binary tree and inorder is the inorder traversal of the same tree, construct and return the binary tree.
+
+👉EXPLANATION:
+ Understanding the Traversals
+    Preorder Traversal: Root → Left → Right
+
+    Inorder Traversal: Left → Root → Right
+
+The key to solving this problem is understanding how to use the properties of these traversals to reconstruct the tree.
+
+👉INTUITITON:
+1.  The first element in the preorder array (preOrder[preStart]) is always the root of the current subtree.
+
+2.  We find the index of this root in the inorder array using a HashMap (mp) for O(1) lookup.
+
+3.  The number of elements to the left of the root in inorder is indRoot - inStart. This tells us how many nodes are in the left subtree.
+
+4.  Using that count:
+
+    We recursively build the left subtree from preStart + 1 to preStart + noOfElOnLeft
+
+  Then we build the right subtree from preStart + noOfElOnLeft + 1 to preEnd
+
+5.  The process continues recursively until the subtree boundaries are invalid (inEnd < inStart or preEnd < preStart), in which case we return null.
+
+👉CODE:
+
+class Solution {
+    //inorder= left root right
+    //preorder= root, left, right
+    public TreeNode buildTree(int[] preOrder, int[] inOrder) {
+        HashMap<Integer, Integer> mp= new HashMap<>();
+        for(int i=0; i<inOrder.length; i++){
+            mp.put(inOrder[i], i);
+        }
+        TreeNode root= buildTree(preOrder, 0, preOrder.length-1, inOrder, 0, inOrder.length-1, mp);
+        return root;
+    }
+    public TreeNode buildTree(int[] preOrder, int preStart, int preEnd, int[] inOrder, int inStart, int inEnd, HashMap<Integer, Integer> mp){
+        if(inEnd<inStart || preEnd<preStart)    return null;
+        TreeNode root= new TreeNode(preOrder[preStart]);
+        int indRoot= mp.get(root.val);
+        int noOfElOnLeft= indRoot- inStart;
+        root.left= buildTree(preOrder, preStart+1, preStart+noOfElOnLeft, inOrder, inStart, indRoot-1, mp);
+        root.right= buildTree(preOrder, preStart + noOfElOnLeft+1, preEnd, inOrder, indRoot+1, inEnd, mp);
+        return root;
+    }
+}
+
