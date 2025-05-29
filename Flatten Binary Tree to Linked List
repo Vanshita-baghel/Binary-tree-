@@ -1,0 +1,32 @@
+👉PROBLEM STATEMENT:
+Given the root of a binary tree, flatten the tree into a "linked list":
+
+The "linked list" should use the same TreeNode class where the right child pointer points to the next node in the list and the left child pointer is always null.
+The "linked list" should be in the same order as a pre-order traversal of the binary tree.
+
+👉INTUITION:
+1. Flatten left subtree of root and right subtree of root
+2. Now, store root.right in a temp ref 
+3. make the left flattened subtree as the right subtree of root
+4. attach end node of right subtree of node with original flattened right subtree( now stored in temp ref)
+
+👉CODE:
+
+class Solution {
+    public void flatten(TreeNode root) {
+        if(root==null)  return;
+        flatten(root.left);
+        flatten(root.right);
+        TreeNode temp= root.right;
+        root.right= root.left;
+        root.left=null;
+        TreeNode node= root;
+        while(node.right!=null) node= node.right;
+        node.right= temp;
+        
+    }
+}
+
+
+//Time complexity:  O(n), where n is the number of nodes
+//Space complexity: O(h), where h is the height of the tree (due to recursion stack).
