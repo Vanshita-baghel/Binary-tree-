@@ -1,0 +1,36 @@
+👉WHY IS IT BETTER?
+  other traversals through recursion, takes time cmplexity= O(N) along with stack space of O(N)
+  But morris traversal works on threadedb binary tree and Time complexity= O(n) and space complexity= O(1).
+
+NOTE: In morris traversal we create a thread between root and rightmost child of root's left child. 
+        This replaces the backtracking that occurs in recursion. 
+        Through thread we can directly reach to root after processing the last node of its left child.
+
+👉CODE:
+
+class Solution {
+    //inorder= left, root, right
+    public List<Integer> inorderTraversal(TreeNode root) {
+        //morris traversal
+        List<Integer> result= new ArrayList<>();
+        TreeNode curr= root;
+        while(curr!=null){
+            if(curr.left==null){
+                result.add(curr.val);
+                curr= curr.right;
+            }
+            else{
+                TreeNode leftChild= curr.left;
+                while(leftChild.right!=null){
+                    leftChild= leftChild.right;
+                }
+                leftChild.right= curr;
+                //now delete or mark null in left child of curr
+                TreeNode temp= curr;
+                curr= curr.left;
+                temp.left=null;
+            }
+        }
+        return result;
+    }
+}
