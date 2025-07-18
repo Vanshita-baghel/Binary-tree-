@@ -1,0 +1,27 @@
+PROBLEM STATEMENT:
+Given the root of a binary tree and an integer targetSum, return true if the tree has a root-to-leaf path such that adding up all the values along the path equals targetSum.
+
+A leaf is a node with no children.
+
+ SOLUTION:
+
+ class Solution {
+    public boolean hasPathSum(TreeNode root, int targetSum) {
+        if(root==null)  return false;
+        return f(root, targetSum, 0);
+
+    }
+    public boolean f(TreeNode root, int target, int sum){
+        if(root==null){
+            return false;
+        }
+        sum+= root.val;
+        if(root.left==null && root.right== null)   return sum==target;
+        return f(root.left, target, sum) || f(root.right, target, sum);
+    }
+}
+
+                              TIME COMPLEXITY: O(N): where N = number of nodes, since every node is visited once.
+                              SPACE COMPLEXITY: O(H): where H = height of the tree.
+                                                      For a balanced tree, this is O(log N).
+                                                      For a skewed tree, it could be O(N) (worst case due to recursion stack).
